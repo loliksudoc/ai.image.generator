@@ -17,16 +17,16 @@ let events = {
     },
     touch: {
         down: "touchstart",
-        move: "touchmove",
-        up: "touchend"
-    }
+        mobe: "touchmove",
+        up: "touchend",
+    },
 };
 
 let deviceType = "";
+
 let draw = false;
 let erase = false;
 
-// Функция для определения типа устройства
 const isTouchDevice = () => {
     try {
         document.createEvent("TouchEvent");
@@ -40,7 +40,6 @@ const isTouchDevice = () => {
 
 isTouchDevice();
 
-// Функция для создания сетки
 gridButton.addEventListener("click", () => {
     container.innerHTML = "";
     let count = 0;
@@ -76,13 +75,14 @@ gridButton.addEventListener("click", () => {
             });
 
             div.appendChild(col);
+
         }
 
         container.appendChild(div);
+
     }
 });
 
-// Функция для проверки и рисования
 function checker(elementId) {
     let gridColumns = document.querySelectorAll(".gridCol");
     gridColumns.forEach((element) => {
@@ -96,22 +96,18 @@ function checker(elementId) {
     });
 }
 
-// Очистка сетки
 clearGridButton.addEventListener("click", () => {
     container.innerHTML = "";
 });
 
-// Переключение на режим стирания
 eraseBtn.addEventListener("click", () => {
     erase = true;
 });
 
-// Переключение на режим рисования
 paintBtn.addEventListener("click", () => {
     erase = false;
 });
 
-// Обновление значений ширины и высоты
 gridWidth.addEventListener("input", () => {
     widthValue.innerHTML = gridWidth.value < 9 ? `0${gridWidth.value}` : gridWidth.value;
 });
@@ -120,7 +116,6 @@ gridHeight.addEventListener("input", () => {
     heightValue.innerHTML = gridHeight.value < 9 ? `0${gridHeight.value}` : gridHeight.value;
 });
 
-// Инициализация значений
 window.onload = () => {
     gridHeight.value = 0;
     gridWidth.value = 0;
