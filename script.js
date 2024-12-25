@@ -31,31 +31,46 @@ async function generateImages(input) {
     for (let i = 0; i < maxImages; i++) {
         const randomNumber = getRandomNumber(1, 10000);
         const prompt = `${input} ${randomNumber}`;
-        const response = await fetch(
-            "https://api-inference.huggingface.co/models/prompthero/openjourney",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${apiKey}`,
-                },
-                body: JSON.stringify({ inputs: prompt }),
+
+        try {
+            const response = await fetch(
+                "https://api-inference.huggingface.co/models/prompthero/openjourney",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${apiKey}`,
+                    },
+                    body: JSON.stringify({ inputs: prompt }),
+                }
+            );
+
+            if (!response.ok) {
+                alert("Failed to generate image!");
+                console.error(`API Error: ${response.statusText}`);
+                return;
             }
-        );
 
-        if (!response.ok) {
-            alert("Failed to generate image!");
+            const data = await response.json();
+            if (!data || !data[0] || !data[0].url) {
+                alert("No image data returned.");
+                console.error("Image URL not found in API response.");
+                return;
+            }
+
+            const imgUrl = data[0].url;  // Получаем ссылку на изображение из ответа API
+            imageUrls.push(imgUrl);
+
+            const img = document.createElement("img");
+            img.src = imgUrl;
+            img.alt = `art-${i + 1}`;
+            img.onclick = () => downloadImage(imgUrl, i);
+            document.getElementById("image-grid").appendChild(img);
+
+        } catch (error) {
+            console.error("Error in generating image:", error);
+            alert("An error occurred while generating the image.");
         }
-
-        const blob = await response.blob();
-        const imgUrl = URL.createObjectURL(blob);
-        imageUrls.push(imgUrl);
-
-        const img = document.createElement("img");
-        img.src = imgUrl;
-        img.alt = `art-${i + 1}`;
-        img.onclick = () => downloadImage(imgUrl, i);
-        document.getElementById("image-grid").appendChild(img);
     }
 
     loading.style.display = "none";
